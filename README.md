@@ -62,9 +62,9 @@ Next, configure AWS CLI by opening a command prompt on the Window server and run
 C:\Users\Administrator> aws configure
 ```
 
-Access Key & Secret Access Key: enter in the credentials generated above for the new IAM user.
-Region Name: the region that this instance is currently in.
-Output Format: enter "text"
+Access Key & Secret Access Key: enter in the credentials generated above for the new IAM user.  
+Region Name: the region that this instance is currently in.  
+Output Format: enter "text"  
 
 <br />
 **SETUP SCRIPT SCHEDULED TASK**
