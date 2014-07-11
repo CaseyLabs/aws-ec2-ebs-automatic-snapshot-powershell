@@ -55,6 +55,7 @@ Here is a sample IAM policy for AWS permissions that this new user will require:
 }
 ```
 
+
 **AWS CLI:** This script requires the AWS CLI tools to be installed on the target Windows instance.
 Download the Windows installer for AWS CLI at: [https://aws.amazon.com/cli/] (https://aws.amazon.com/cli/)
 
@@ -66,6 +67,7 @@ Next, configure AWS CLI by opening a command prompt on the Window server and run
 Access Key & Secret Access Key: enter in the credentials generated above for the new IAM user.
 Region Name: the region that this instance is currently in.
 Output Format: enter "text"
+
 
 **SETUP SCRIPT SCHEDULED TASK**
 
