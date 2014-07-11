@@ -23,7 +23,7 @@ Pull requests greatly welcomed!
 
 **REQUIREMENTS**
 
-**IAM User:** This script requires that a new user (e.g. ebs-snapshot) be created in the IAM section of AWS. 
+**IAM User:** This script requires that a new user (e.g. ebs-snapshot) be created in the IAM section of AWS.  
 Here is a sample IAM policy for AWS permissions that this new user will require:
 
 ```
@@ -54,7 +54,7 @@ Here is a sample IAM policy for AWS permissions that this new user will require:
 }
 ```
 <br />
-**AWS CLI:** This script requires the AWS CLI tools to be installed on the target Windows instance.
+**AWS CLI:** This script requires the AWS CLI tools to be installed on the target Windows instance.  
 Download the Windows installer for AWS CLI at: [https://aws.amazon.com/cli/] (https://aws.amazon.com/cli/)
 
 Next, configure AWS CLI by opening a command prompt on the Window server and running this command: 
@@ -71,7 +71,7 @@ Output Format: enter "text"
 
 Copy this script to your chosen location (e.g. C:\aws\ebs-snapshot.ps1)
 
-Next, create a batch file in the same directory (e.g. C:\aws\run-backup.cmd)
+Next, create a batch file in the same directory (e.g. C:\aws\run-backup.cmd)  
 Edit run-backup.cmd and enter these commands (with the appropriate local admin name and file locations):
 
 ```
