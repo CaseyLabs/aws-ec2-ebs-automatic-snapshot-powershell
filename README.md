@@ -3,7 +3,7 @@ aws-ec2-ebs-automatic-snapshot-powershell
 
 ####Powershell script for Automatic EBS Snapshots and Cleanup on Amazon Web Services (AWS)
 
-Written by **[Casey Labs Inc.] (http://www.caseylabs.com)**
+Written by **[AWS Consultants - Casey Labs Inc.] (http://www.caseylabs.com)**
 
 *Casey Labs - Contact us for all your Amazon Web Services Consulting needs!*
 
