@@ -60,7 +60,7 @@ Download the Windows installer for AWS CLI at: [https://aws.amazon.com/cli/] (ht
 
 Next, configure AWS CLI by opening a command prompt on the Window server and running this command: 
 ```
-	aws configure
+C:\Users\Administrator> aws configure
 ```
 
 Access Key & Secret Access Key: enter in the credentials generated above for the new IAM user.
