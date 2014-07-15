@@ -63,9 +63,9 @@ Next, configure AWS CLI by opening a command prompt on the Window server and run
 C:\Users\Administrator> aws configure
 ```
 
-Access Key & Secret Access Key: enter in the credentials generated above for the new IAM user.  
-Region Name: the region that this instance is currently in.  
-Output Format: enter "text"  
+_Access Key & Secret Access Key:_ enter in the credentials generated above for the new IAM user.  
+_Region Name:_ the region that this instance is currently in.  
+_Output Format:_ enter "text"  
 
 <br />
 **SETUP SCRIPT SCHEDULED TASK**
@@ -80,6 +80,6 @@ set USERPROFILE=C:\Users\Administrator\
 powershell.exe -ExecutionPolicy Bypass -file "C:\aws\ebs-snapshot.ps1"
 ```
 
-Save the file. [Why do we have this separate batch script? Because in Windows 2012, the Task Scheduler passes the Default User environment variables, and therefore can't get the admin user's AWS credentials.]
+Save the file. Why do we have this separate batch script? Because in Windows 2012, the Task Scheduler passes the Default User environment variables, and therefore can't get the admin user's AWS credentials.
 
 Next, open Task Scheduler on the server, and create a new task that runs C:\aws\run-backup.cmd on a nightly basis.
