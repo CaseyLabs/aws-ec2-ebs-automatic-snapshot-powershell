@@ -27,7 +27,7 @@ $runbackupscript = "C:\aws\2-run-backup.cmd"
 
 # Gather list of local disks that aren't instance stores
 $nl = [Environment]::NewLine
-$drives = Get-WmiObject -Class Win32_LogicalDisk | where {$_.VolumeName -notlike "Temporary Storage*"} | Select-Object DeviceID
+$drives = Get-WmiObject -Class Win32_LogicalDisk | where {$_.VolumeName -notlike "Temporary Storage*"} |  where {$_.DriveType -eq '3'} | Select-Object DeviceID
 
 # Output diskshadow commands to a text file
 $scriptTxt = "# Diskshadow commands for EBS snapshots" + $nl
