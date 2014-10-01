@@ -77,7 +77,7 @@ _Output Format:_ enter "text"
 2) Extract the zip contents to **C:\aws** on your Windows Server
 
 3) Next, open Task Scheduler on the server, and create a new task that runs:
-
+```
 powershell.exe -ExecutionPolicy Bypass -file "C:\aws\3-ebs-snapshot.ps1"
-
+```
 ...on a nightly basis.
