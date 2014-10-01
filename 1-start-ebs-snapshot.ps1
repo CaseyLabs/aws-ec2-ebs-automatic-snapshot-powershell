@@ -23,7 +23,7 @@
 
 # SET FILE LOCATIONS
 $diskshadowscript = "C:\aws\diskshadow.txt"
-$runbackupscript = "C:\aws\run-backup.cmd"
+$runbackupscript = "C:\aws\2-run-backup.cmd"
 
 # Gather list of local disks that aren't instance stores
 $nl = [Environment]::NewLine
