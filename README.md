@@ -10,11 +10,13 @@ Written by **[AWS Consultants - Casey Labs Inc.] (http://www.caseylabs.com)**
 ===================================
 
 **How it works:**
-ebs-snapshot.ps1 will:
-- Determine the instance ID of the EC2 server on which the script runs
-- Gather a list of all volume IDs attached to that instance
+These scripts will:
+- Start diskshadow on your instance, in order to keep disk consistency.
+- Determine the instance ID of the EC2 server on which the script runs.
+- Gather a list of all volume IDs attached to that instance.
 - Take a snapshot of each attached volume
 - The script will then delete all associated snapshots taken by the script that are older than 7 days
+- Stop diskshadow to allow disk writes again.
 
 
 Pull requests greatly welcomed!
@@ -58,7 +60,7 @@ Here is a sample IAM policy for AWS permissions that this new user will require:
 Download the Windows installer for AWS CLI at: [https://aws.amazon.com/cli/] (https://aws.amazon.com/cli/)
 
 Next, configure AWS CLI by opening a command prompt on the Window server and running this command:   
-[**ASSUMPTION:** This command is being run under the local administrator account.]
+[**ASSUMPTION:** This command is being run under the local ADMINISTRATOR account.]
 ```
 C:\Users\Administrator> aws configure
 ```
@@ -70,16 +72,12 @@ _Output Format:_ enter "text"
 <br />
 **SETUP SCRIPT SCHEDULED TASK**
 
-Copy this script to your chosen location (e.g. C:\aws\ebs-snapshot.ps1)
+1) [Download the scripts from Github] (https://github.com/CaseyLabs/aws-ec2-ebs-automatic-snapshot-powershell/archive/master.zip)
 
-Next, create a batch file in the same directory (e.g. C:\aws\run-backup.cmd)  
-Edit run-backup.cmd and enter these commands (with the appropriate local admin name and file locations):
+2) Extract the zip contents to C:\aws on your Windows Server
 
-```
-set USERPROFILE=C:\Users\Administrator\
-powershell.exe -ExecutionPolicy Bypass -file "C:\aws\ebs-snapshot.ps1"
-```
+3) Next, open Task Scheduler on the server, and create a new task that runs:
 
-Save the file. Why do we have this separate batch script? Because in Windows 2012, the Task Scheduler passes the Default User environment variables, and therefore can't get the admin user's AWS credentials.
+powershell.exe -ExecutionPolicy Bypass -file "C:\aws\3-ebs-snapshot.ps1"
 
-Next, open Task Scheduler on the server, and create a new task that runs C:\aws\run-backup.cmd on a nightly basis.
+...on a nightly basis.
