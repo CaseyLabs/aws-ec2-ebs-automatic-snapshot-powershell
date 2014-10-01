@@ -74,7 +74,7 @@ _Output Format:_ enter "text"
 
 1) [Download the scripts from Github] (https://github.com/CaseyLabs/aws-ec2-ebs-automatic-snapshot-powershell/archive/master.zip)
 
-2) Extract the zip contents to C:\aws on your Windows Server
+2) Extract the zip contents to **C:\aws** on your Windows Server
 
 3) Next, open Task Scheduler on the server, and create a new task that runs:
 
