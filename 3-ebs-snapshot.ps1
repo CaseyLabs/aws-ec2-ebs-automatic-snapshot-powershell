@@ -72,19 +72,16 @@
 
 ## SETUP SCRIPT SCHEDULED TASK
 #
-# Copy this script to your chosen location (e.g. C:\aws\ebs-snapshot.ps1)
+# 1) Download the scripts from Github: 
+# https://github.com/CaseyLabs/aws-ec2-ebs-automatic-snapshot-powershell/archive/master.zip
 #
-# Next, create a batch file in the same directory (e.g. C:\aws\run-backup.cmd)
-# Edit run-backup.cmd and enter these commands (with the appropriate local admin name and file locations, and without the #'s):
+# 2) Extract the zip contents to C:\aws on your Windows Server
 #
-# set USERPROFILE=C:\Users\Administrator\
-# powershell.exe -ExecutionPolicy Bypass -file "C:\aws\ebs-snapshot.ps1"
+# 3) Next, open Task Scheduler on the server, and create a new task that runs:
+# 
+# powershell.exe -ExecutionPolicy Bypass -file "C:\aws\1-start-ebs-snapshot.ps1"
 #
-# Save the file. [Why do we have this separate batch script? Because in Windows 2012, the Task Scheduler passes the Default User environment
-# variables, and therefore can't get the admin user's AWS credentials.]
-#
-# Next, open Task Scheduler on the server, and create a new task that runs C:\aws\run-backup.cmd on a nightly basis.
-
+# ...on a nightly basis.
 
 ## BEGIN START OF SCRIPT ##
 
