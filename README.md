@@ -78,6 +78,6 @@ _Output Format:_ enter "text"
 
 3) Next, open Task Scheduler on the server, and create a new task that runs:
 ```
-powershell.exe -ExecutionPolicy Bypass -file "C:\aws\3-ebs-snapshot.ps1"
+powershell.exe -ExecutionPolicy Bypass -file "C:\aws\1-start-ebs-snapshot.ps1"
 ```
 ...on a nightly basis.
