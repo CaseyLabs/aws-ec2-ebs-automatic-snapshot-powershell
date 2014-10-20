@@ -90,6 +90,7 @@ $curl = New-Object System.Net.WebClient
 $instance_id = $curl.DownloadString("http://169.254.169.254/latest/meta-data/instance-id")
 $hostname = hostname
 $today = Get-Date -format yyyy-MM-dd
+$nl = [Environment]::NewLine
 
 # How many days do you wish to retain backups for? Default: 7 days
 $retention_days = "7"
@@ -98,6 +99,10 @@ $retention_days = "7"
 $logfile = "C:\Windows\Logs\ebs-snaphots.txt"
 $tmp_vol_info = "C:\Windows\Logs\volume_info.txt"
 $tmp_snapshot_info = "C:\Windows\Logs\snapshot_info.txt"
+
+# Clear old temp files
+Remove-Item $tmp_vol_info -recurse
+Remove-Item $tmp_snapshot_info -recurse
 
 # Start log file: today's date
 if (!(test-path $logfile))
@@ -127,7 +132,7 @@ foreach($volume_id in $volume_list) {
 
 # Get all snapshot IDs associated with each volume attached to this instance
 foreach($volume_id in $volume_list) {
-	aws ec2 describe-snapshots --output=text --filters "Name=volume-id,Values=$volume_id" "Name=tag:CreatedBy,Values=AutomatedBackup" --query Snapshots[].SnapshotId | %{$_ -replace "`t","`n"} | out-file $tmp_snapshot_info
+	aws ec2 describe-snapshots --output=text --filters "Name=volume-id,Values=$volume_id" "Name=tag:CreatedBy,Values=AutomatedBackup" --query Snapshots[].SnapshotId | %{$_ -replace "`t","`n"} | Add-Content $tmp_snapshot_info
 	}
 
 # Purge all instance volume snapshots created by this script that are older than 7 days
