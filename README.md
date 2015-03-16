@@ -62,7 +62,8 @@ Here is a sample IAM policy for AWS permissions that this new user will require:
 Download the Windows installer for AWS CLI at: [https://aws.amazon.com/cli/] (https://aws.amazon.com/cli/)
 
 Next, configure AWS CLI by opening a command prompt on the Window server and running this command:   
-[**ASSUMPTION:** This command is being run under the local ADMINISTRATOR account.]
+
+[**ASSUMPTION:** This command is being run under the local ADMINISTRATOR account. If you are running the script under a different user account, you will need edit the file "2-run-backup.cmd" and change the USERPROFILE variable path.]
 ```
 C:\Users\Administrator> aws configure
 ```
