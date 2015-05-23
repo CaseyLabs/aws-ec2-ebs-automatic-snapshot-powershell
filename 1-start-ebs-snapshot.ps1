@@ -6,7 +6,7 @@
 #
 ############################################################
 
-# SET FILE LOCATIONS
+# Set file locations
 $diskshadowscript = "C:\aws\diskshadow.txt"
 $runbackupscript = "C:\aws\2-run-backup.cmd"
 
@@ -23,4 +23,3 @@ $scriptTxt | Set-Content $diskshadowscript
 
 # Run diskshadow with our new script file
 diskshadow /s $diskshadowscript
-
