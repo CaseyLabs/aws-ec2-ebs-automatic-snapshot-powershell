@@ -12,15 +12,19 @@ Set-StrictMode -Version Latest
 $diskshadowscript = "C:\aws\diskshadow.txt"
 $runbackupscript = "C:\aws\2-run-backup.cmd"
 
+# Global Variables
+$nl = [Environment]::NewLine
+$scriptTxt = ""
+
 # Gather list of local disks that aren't instance stores
 $drives = Get-WmiObject -Class Win32_LogicalDisk | where {$_.VolumeName -notlike "Temporary Storage*"} |  where {$_.DriveType -eq '3'} | Select-Object DeviceID
 
 # Output diskshadow commands to a text file
-$scriptTxt = $scriptTxt + "begin backup" + "`n"
-$drives | ForEach-Object { $scriptTxt = $scriptTxt + "add volume " + $_.DeviceID + "`n" }
-$scriptTxt = $scriptTxt + "create" + "`n"
-$scriptTxt = $scriptTxt + "exec $runbackupscript" + "`n"
-$scriptTxt = $scriptTxt + "end backup" + "`n"
+$scriptTxt = $scriptTxt + "begin backup" + $nl
+$drives | ForEach-Object { $scriptTxt = $scriptTxt + "add volume " + $_.DeviceID  + $nl }
+$scriptTxt = $scriptTxt + "create"  + $nl
+$scriptTxt = $scriptTxt + "exec $runbackupscript" + $nl
+$scriptTxt = $scriptTxt + "end backup" + $nl
 $scriptTxt | Set-Content $diskshadowscript
 
 # Run diskshadow with our new script file
