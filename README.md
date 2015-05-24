@@ -62,7 +62,7 @@ C:\Users\Administrator> aws configure
 
 AWS Access Key ID: (Enter in the IAM credentials generated above.)
 AWS Secret Access Key: (Enter in the IAM credentials generated above.)
-Default region name: (The region that this instance is currently in: i.e. us-east-1, eu-west-1, etc.)
+Default region name: (The region that this instance is in: i.e. us-east-1, eu-west-1, etc.)
 Default output format: (Enter "text".)
 ```
 
