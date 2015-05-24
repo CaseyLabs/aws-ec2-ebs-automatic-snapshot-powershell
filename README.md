@@ -78,3 +78,15 @@ Default output format: (Enter "text".)
 powershell.exe -ExecutionPolicy Bypass -file "C:\aws\1-start-ebs-snapshot.ps1"
 ```
 ...on a nightly basis.
+
+===================================
+
+**TROUBLESHOOTING**
+
+If you setup the AWS CLI under a Windows user account other than the local Administrator, you will need to edit the file "2-run-backup.cmd", and change the USERPROFILE path.
+
+For example, let's say that you've configured the AWS CLI credentials under the Windows user account "myadmin". You will need to:
+
+- Open C:\aws\2-run-backup.cmd in Notepad
+- Change "set USERPROFILE=C:\Users\Administrator\" to "set USERPROFILE=C:\Users\myadmin\"
+- Save and exit.
