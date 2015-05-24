@@ -1,7 +1,7 @@
 aws-ec2-ebs-automatic-snapshot-powershell
 ===================================
 
-####Powershell script for Automatic EBS Snapshots and Cleanup on Amazon Web Services (AWS)
+####Powershell script for Automatic EBS Snapshots and Cleanup on Amazon Web Services (AWS) EC2
 
 Written by **[AWS Consultants - Casey Labs Inc.] (http://www.caseylabs.com)**
 
@@ -25,8 +25,7 @@ Pull requests greatly welcomed!
 
 **REQUIREMENTS**
 
-**IAM User:** This script requires that a new user (e.g. ebs-snapshot) be created in the IAM section of AWS.  
-Here is a sample IAM policy for AWS permissions that this new user will require:
+**IAM:** This script requires that an IAM User or IAM Role be created with the following policy attached:
 
 ```
 {
@@ -39,16 +38,8 @@ Here is a sample IAM policy for AWS permissions that this new user will require:
                 "ec2:CreateSnapshot",
                 "ec2:CreateTags",
                 "ec2:DeleteSnapshot",
-                "ec2:DescribeInstanceAttribute",
-                "ec2:DescribeInstanceStatus",
-                "ec2:DescribeInstances",
-                "ec2:DescribeSnapshotAttribute",
                 "ec2:DescribeSnapshots",
-                "ec2:DescribeVolumeAttribute",
-                "ec2:DescribeVolumeStatus",
-                "ec2:DescribeVolumes",
-                "ec2:ReportInstanceStatus",
-                "ec2:ResetSnapshotAttribute"
+                "ec2:DescribeVolumes"
             ],
             "Resource": [
                 "*"
@@ -59,21 +50,24 @@ Here is a sample IAM policy for AWS permissions that this new user will require:
 ```
 <br />
 **AWS CLI:** This script requires the AWS CLI tools to be installed on the target Windows instance.  
-Download the Windows installer for AWS CLI at: [https://aws.amazon.com/cli/] (https://aws.amazon.com/cli/)
 
-Next, configure AWS CLI by opening a command prompt on the Window server and running this command:   
+- Log into your Windows instance with your local Administrator account.
 
-[**ASSUMPTION:** This command is being run under the local ADMINISTRATOR account. If you are running the script under a different user account, you will need edit the file "2-run-backup.cmd" and change the USERPROFILE variable path.]
+- Download the Windows installer for AWS CLI at: [https://aws.amazon.com/cli/] (https://aws.amazon.com/cli/)
+
+- Next, open a command prompt on the Window server and configure the AWS CLI (_Note: you can skip this step if your EC2 instance is configured with an IAM role_):   
+
 ```
 C:\Users\Administrator> aws configure
+
+AWS Access Key ID: _Enter in the IAM credentials generated above._
+AWS Secret Access Key: _Enter in the IAM credentials generated above._
+Default region name: _The region that this instance is currently in: i.e. us-east-1, eu-west-1, etc._
+Default output format: _Enter "text"_
 ```
 
-_Access Key & Secret Access Key:_ enter in the credentials generated above for the new IAM user.  
-_Region Name:_ the region that this instance is currently in.  
-_Output Format:_ enter "text"  
-
 <br />
-**SETUP SCRIPT SCHEDULED TASK**
+**INSTALL SCRIPT AS A SCHEDULED TASK**
 
 1) [Download the scripts from Github] (https://github.com/CaseyLabs/aws-ec2-ebs-automatic-snapshot-powershell/archive/master.zip)
 
