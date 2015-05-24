@@ -6,7 +6,9 @@
 #
 ############################################################
 
-# Set file locations
+Set-StrictMode -Version Latest
+
+# User variables: Set file locations
 $diskshadowscript = "C:\aws\diskshadow.txt"
 $runbackupscript = "C:\aws\2-run-backup.cmd"
 

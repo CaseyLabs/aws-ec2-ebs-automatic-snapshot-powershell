@@ -1,161 +1,97 @@
-
-#######################################################################
+#############################################################
 #
-## POWERSHELL: Automatic EBS Volume Snapshot Creation & Clean-Up Script
+# POWERSHELL: EBS Automatic Snapshot - Part #3: Snapshot Component
+# By Casey Labs Inc.
+# Github repo: https://github.com/CaseyLabs/aws-ec2-ebs-automatic-snapshot-powershell
 #
-# Written by Casey Labs Inc. (http://www.caseylabs.com)
-# Casey Labs - Contact us for all your Amazon Web Services Consulting needs!
-#
-# PURPOSE: This Powershell script can be used to take automatic snapshots of your Windows EC2 instance. Script process:
-# - Determine the instance ID of the EC2 server on which the script runs
-# - Gather a list of all volume IDs attached to that instance
-# - Take a snapshot of each attached volume
-# - The script will then delete all associated snapshots taken by the script that are older than 7 days
-#
-# DISCLAMER: The software and service is provided by the copyright holders and contributors "as is" and any express or implied warranties, 
-# including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall
-# the copyright owner or contributors be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but
-# not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any
-# theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this
-# software or service, even if advised of the possibility of such damage.
-#
-# NON-LEGAL MUMBO-JUMBO DISCLAIMER: Hey, this script deletes snapshots (though only the ones that it creates)!
-# Make sure that you undestand how the script works. No responsibility accepted in event of accidental data loss.
-# 
-#######################################################################
-
-## SCRIPT REQUIREMENTS:
-#
-## IAM USER:
-#
-# This script requires that a new user (e.g. ebs-snapshot) be created in the IAM section of AWS. 
-# Here is a sample IAM policy for AWS permissions that this new user will require:
-#
-# {
-#    "Version": "2012-10-17",
-#    "Statement": [
-#        {
-#            "Sid": "Stmt1426256275000",
-#            "Effect": "Allow",
-#            "Action": [
-#                "ec2:CreateSnapshot",
-#                "ec2:CreateTags",
-#                "ec2:DeleteSnapshot",
-#                "ec2:DescribeInstanceAttribute",
-#                "ec2:DescribeInstanceStatus",
-#                "ec2:DescribeInstances",
-#                "ec2:DescribeSnapshotAttribute",
-#                "ec2:DescribeSnapshots",
-#                "ec2:DescribeVolumeAttribute",
-#                "ec2:DescribeVolumeStatus",
-#                "ec2:DescribeVolumes",
-#                "ec2:ReportInstanceStatus",
-#                "ec2:ResetSnapshotAttribute"
-#            ],
-#            "Resource": [
-#                "*"
-#            ]
-#        }
-#    ]
-# }
+############################################################
 
 
-## AWS CLI:
-# This script requires the AWS CLI tools to be installed on the target Windows instance.
-# Download the Windows installer for AWS CLI at: https://aws.amazon.com/cli/
-# 
-# Next, configure AWS CLI by opening a command prompt on the Window server and running this command: 
-# [ASSUMPTION: This command is being run under the local administrator account.]
-#		aws configure
-#
-# Access Key & Secret Access Key: enter in the credentials generated above for the new IAM user
-# Region Name: the region that this instance is currently in.
-# Output Format: enter "text"
-
-## SETUP SCRIPT SCHEDULED TASK
-#
-# 1) Download the scripts from Github: 
-# https://github.com/CaseyLabs/aws-ec2-ebs-automatic-snapshot-powershell/archive/master.zip
-#
-# 2) Extract the zip contents to C:\aws on your Windows Server
-#
-# 3) Next, open Task Scheduler on the server, and create a new task that runs:
-# 
-# powershell.exe -ExecutionPolicy Bypass -file "C:\aws\1-start-ebs-snapshot.ps1"
-#
-# ...on a nightly basis.
-
-## BEGIN START OF SCRIPT ##
-
-## SET VARIABLES
-$curl = New-Object System.Net.WebClient
-$instance_id = $curl.DownloadString("http://169.254.169.254/latest/meta-data/instance-id")
-$hostname = hostname
-$today = Get-Date -format yyyy-MM-dd
-$nl = [Environment]::NewLine
-
+## Set User Variables
 # How many days do you wish to retain backups for? Default: 7 days
 $retention_days = "7"
 
-# Where to store script log/temp files
-$logfile = "C:\Windows\Logs\ebs-snaphots.txt"
-$tmp_vol_info = "C:\Windows\Logs\volume_info.txt"
-$tmp_snapshot_info = "C:\Windows\Logs\snapshot_info.txt"
-
-# Clear old temp files
-Remove-Item $tmp_vol_info -recurse
-Remove-Item $tmp_snapshot_info -recurse
-
-# Start log file: today's date
-if (!(test-path $logfile))
-	{ New-Item $logfile -type file }
-
-Add-Content $logfile "$today"
-
-# Grab all volume IDs attached to this instance, and export the IDs to a text file
-aws ec2 describe-volumes --filters Name="attachment.instance-id,Values=$instance_id" --query Volumes[].VolumeId --output text  | %{$_ -replace "`t","`n"} | out-file $tmp_vol_info
-
-# Take a snapshot of all volumes attached to this instance
+## Set Gloabal Variables
+Set-StrictMode -Version Latest
 $volume_list = @()
-$volume_list = get-content $tmp_vol_info
-foreach($volume_id in $volume_list) {
-	$description="$hostname-backup-$today"
-	Add-Content $logfile "Volume ID is $volume_id"
-    
-	# Next, we're going to take a snapshot of the current volume, and capture the resulting snapshot ID
-	$snapresult = aws ec2 create-snapshot --output=text --description $description --volume-id $volume_id --query SnapshotId
-	
-    Add-Content $logfile "New snapshot is $snapresult"
-         
-    # And then we're going to add a "CreatedBy:AutomatedBackup" tag to the resulting snapshot.
-    # Why? Because we only want to purge snapshots taken by the script later, and not delete snapshots manually taken.
-    aws ec2 create-tags --resource $snapresult --tags Key="CreatedBy,Value=AutomatedBackup"
-	}
-
-# Get all snapshot IDs associated with each volume attached to this instance
-foreach($volume_id in $volume_list) {
-	aws ec2 describe-snapshots --output=text --filters "Name=volume-id,Values=$volume_id" "Name=tag:CreatedBy,Values=AutomatedBackup" --query Snapshots[].SnapshotId | %{$_ -replace "`t","`n"} | Add-Content $tmp_snapshot_info
-	}
-
-# Purge all instance volume snapshots created by this script that are older than 7 days
 $snapshot_list = @()
-$snapshot_list = get-content $tmp_snapshot_info
-foreach($snapshot_id in $snapshot_list) {
-    Write-Host "Checking $snapshot_id..."
-	$snapshot_date = aws ec2 describe-snapshots --output=text --snapshot-ids $snapshot_id --query Snapshots[].StartTime | %{$_.split('T')[0]}
+$log_message = ""
+$hostname = hostname
+$today = Get-Date -format yyyy-MM-dd
+$curl = New-Object System.Net.WebClient
+$instance_id = $curl.DownloadString("http://169.254.169.254/latest/meta-data/instance-id")
+$region = $region.$curl.DownloadString("http://169.254.169.254/latest/meta-data/placement/availability-zone")
+$region = $region.Substring(0,$region.Length-1)
+
+
+## Function Declarations
+
+# Check if an event log source for this script exists; create one if it doesn't.
+function logsetup {
+	if (!(Get-Eventlog -LogName "Application" -Source "EBS-Snapshot"))
+		{ New-Eventlog -LogName "Application" -Source "EBS-Snapshot" }
+}
+
+# Write to console and Application event log (event ID: 1337)
+function log($type, $message) {
+	Write-Host $message
+	Write-EventLog –LogName Application –Source "EBS-Snapshot" –EntryType $type –EventID 1337 –Message $message
+}
+
+# Pre-requisite check: make sure AWS CLI is installed properly.
+function prereqcheck {
+	if ((Get-Command "aws.exe" -ErrorAction SilentlyContinue) -eq $null) {
+		log "Error" "Unable to find aws.exe in your PATH.`nVisit http://aws.amazon.com/cli/ to download the AWS CLI tools."
+		break 
+	}
+}
+
+# Snapshot all volumes attached to this instance.
+function snapshot_volumes {
+	foreach($volume_id in $volume_list) 	{
+		$description="$hostname-backup-$today"
+		$log_message = $log_message + "Volume ID is $volume_id`n"
     
-	$snapshot_age = (get-date $today) - (get-date $snapshot_date)  | select-object Days | foreach {$_.Days}
+		# Take a snapshot of the current volume, and capture the resulting snapshot ID
+		$snapresult = aws ec2 create-snapshot --region $region --output=text --description $description --volume-id $volume_id --query SnapshotId
+		$log_message = $log_message + "New snapshot is $snapresult`n"
+         
+		# And then we're going to add a "CreatedBy:AutomatedBackup" tag to the resulting snapshot.
+		# Why? Because we only want to purge snapshots taken by the script later, and not delete snapshots manually taken.
+		aws ec2 create-tags --region $region --resource $snapresult --tags Key="CreatedBy,Value=AutomatedBackup"
+		$log_message = $log_message + "Volume ID is $volume_id.`n"
+	}
+}
+
+# Delete all attached volume snapshots created by this script that are older than $retention_days
+function cleanup_snapshots {
+	$snapshot_list = aws ec2 describe-snapshots --region $region --output=text --filters "Name=volume-id,Values=$volume_id" "Name=tag:CreatedBy,Values=AutomatedBackup" --query Snapshots[].SnapshotId
+	foreach($snapshot_id in $snapshot_list) {
+		$log_message = $log_message + "Checking $snapshot_id...`n"
+		$snapshot_date = aws ec2 describe-snapshots --region $region --output=text --snapshot-ids $snapshot_id --query Snapshots[].StartTime | %{$_.split('T')[0]}
+		$snapshot_age = (get-date $today) - (get-date $snapshot_date)  | select-object Days | foreach {$_.Days}
 	
-    if ($snapshot_age -gt $retention_days) {
-	    Add-Content $logfile "Deleting snapshot $snapshot_id ..."
-        aws ec2 delete-snapshot --snapshot-id $snapshot_id
+		if ($snapshot_age -gt $retention_days) {
+			$log_message = $log_message + "Deleting snapshot $snapshot_id ...`n"
+			aws ec2 delete-snapshot --region $region --snapshot-id $snapshot_id
 		}
-    else {
-        Add-Content $logfile "Not deleting snapshot $snapshot_id ..."
+		else {
+			$log_message = $log_message + "Not deleting snapshot $snapshot_id ...`n"
 		}
 	}
-	
-# One last carriage-return in the logfile...
-Add-Content $logfile "`n"
+}
 
-Write-Host "Results logged to $logfile"
+## START COMMANDS
+
+# Initialization functions
+logsetup
+prereqcheck
+
+$volume_list = aws ec2 describe-volumes --filters Name="attachment.instance-id,Values=$instance_id" --query Volumes[].VolumeId --output text
+
+snapshot_volumes
+#cleanup_snapshots
+
+# Write output to Event Log
+log "Info" $log_message
+write-host "Script complete. Results written to the Event Log (check under Applications, Event ID 1377)."
