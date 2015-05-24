@@ -67,7 +67,7 @@ function snapshot_volumes {
 # Delete all attached volume snapshots created by this script that are older than $retention_days
 function cleanup_snapshots {
 	foreach($volume_id in $volume_list) {
-		$snapshot_list = aws ec2 describe-snapshots --region $region --output=text --filters "Name=volume-id,Values=$volume_id" "Name=tag:CreatedBy,Values=AutomatedBackup" --query Snapshots[].SnapshotId
+		$snapshot_list = aws ec2 describe-snapshots --region $region --output=text --filters "Name=volume-id,Values=$volume_id" "Name=tag:CreatedBy,Values=AutomatedBackup" --query Snapshots[].SnapshotId | %{$_.split("`t")}
 		foreach($snapshot_id in $snapshot_list) {
 			$global:log_message = $global:log_message + "Checking $snapshot_id..." + $nl
 			$snapshot_date = aws ec2 describe-snapshots --region $region --output=text --snapshot-ids $snapshot_id --query Snapshots[].StartTime | %{$_.split('T')[0]}
