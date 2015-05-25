@@ -34,7 +34,7 @@ function logsetup {
 }
 
 # Write to console and Application event log (event ID: 1337)
-function log ($type, $message) {
+function log ($type) {
 	Write-Host $global:log_message
 	Write-EventLog –LogName Application –Source "EBS-Snapshot" –EntryType $type –EventID 1337 –Message $global:log_message
 }
@@ -42,7 +42,8 @@ function log ($type, $message) {
 # Pre-requisite check: make sure AWS CLI is installed properly.
 function prereqcheck {
 	if ((Get-Command "aws.exe" -ErrorAction SilentlyContinue) -eq $null) {
-		log "Error" "Unable to find aws.exe in your PATH.`nVisit http://aws.amazon.com/cli/ to download the AWS CLI tools."
+		$global:log_message = "Unable to find aws.exe in your PATH.`nVisit http://aws.amazon.com/cli/ to download the AWS CLI tools."
+		log "Error"
 		break 
 	}
 }
@@ -96,5 +97,5 @@ snapshot_volumes
 cleanup_snapshots
 
 # Write output to Event Log
-log "Info" $log_message
+log "Info"
 write-host "Script complete. Results written to the Event Log (check under Applications, Event ID 1377)."
