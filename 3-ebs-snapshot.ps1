@@ -36,7 +36,7 @@ function logsetup {
 # Write to console and Application event log (event ID: 1337)
 function log ($type) {
 	Write-Host $global:log_message
-	Write-EventLog –LogName Application –Source "EBS-Snapshot" –EntryType $type –EventID 1337 –Message $global:log_message
+	Write-EventLog -LogName Application -Source "EBS-Snapshot" -EntryType $type -EventID 1337 -Message $global:log_message
 }
 
 
