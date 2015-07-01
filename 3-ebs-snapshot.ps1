@@ -39,6 +39,7 @@ function log ($type) {
 	Write-EventLog –LogName Application –Source "EBS-Snapshot" –EntryType $type –EventID 1337 –Message $global:log_message
 }
 
+
 # Pre-requisite check: make sure AWS CLI is installed properly.
 function prereqcheck {
 	if ((Get-Command "aws.exe" -ErrorAction SilentlyContinue) -eq $null) {
