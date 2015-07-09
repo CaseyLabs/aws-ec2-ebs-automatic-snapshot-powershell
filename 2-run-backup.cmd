@@ -1,10 +1,10 @@
-#############################################################
-#
-# EBS Automatic Snapshot - Part #2: Intermeditary Script
-# By Casey Labs Inc.
-# Github repo: https://github.com/CaseyLabs/aws-ec2-ebs-automatic-snapshot-powershell
-#
-############################################################
+REM #############################################################
+REM #
+REM # EBS Automatic Snapshot - Part #2: Intermeditary Script
+REM # By Casey Labs Inc.
+REM # Github repo: https://github.com/CaseyLabs/aws-ec2-ebs-automatic-snapshot-powershell
+REM #
+REM ############################################################
 
 # Intermediary batch script - called by the Disk Shadow script.
 #
