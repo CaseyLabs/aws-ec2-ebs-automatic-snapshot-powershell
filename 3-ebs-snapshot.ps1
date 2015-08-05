@@ -142,7 +142,7 @@ function get_drive_letter($volId) {
 logsetup
 prereqcheck
 
-$volume_list = aws ec2 describe-volumes --filters Name="attachment.instance-id,Values=$instance_id" --query Volumes[].VolumeId --output text | %{$_.split("`t")}
+$volume_list = aws ec2 describe-volumes --region $region --filters Name="attachment.instance-id,Values=$instance_id" --query Volumes[].VolumeId --output text | %{$_.split("`t")}
 
 snapshot_volumes
 cleanup_snapshots
